@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import './App.scss';
 import { GoodsList } from './GoodsList';
 import { Good } from './types/Good';
@@ -9,7 +9,7 @@ export const App: React.FC = () => {
   const [goods, setGoods] = useState<Good[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const handleLoad = (apiCall: () => Promise<Good[]>) => {
+  const handleLoad = useCallback((apiCall: () => Promise<Good[]>) => {
     apiCall()
       .then(data => {
         setGoods(data);
@@ -22,11 +22,14 @@ export const App: React.FC = () => {
           setError('An unknown error occurred');
         }
       });
-  };
+  }, []);
 
-  const handleLoadAll = () => handleLoad(getAll);
-  const handleLoadFiveFirst = () => handleLoad(get5First);
-  const handleLoadRed = () => handleLoad(getRed);
+  const handleLoadAll = useCallback(() => handleLoad(getAll), [handleLoad]);
+  const handleLoadFiveFirst = useCallback(
+    () => handleLoad(get5First),
+    [handleLoad],
+  );
+  const handleLoadRed = useCallback(() => handleLoad(getRed), [handleLoad]);
 
   return (
     <div className="App">
